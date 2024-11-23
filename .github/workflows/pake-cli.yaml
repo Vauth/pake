@@ -5,7 +5,7 @@ on:
       platform:
         description: 'platform'
         required: true
-        default: 'macos-latest'
+        default: 'windows-latest'
         type: choice
         options:
           - 'windows-latest'
@@ -137,9 +137,15 @@ jobs:
       - name: Upload archive
         uses: actions/upload-artifact@v3
         with:
-          name: output-${{ inputs.platform }}.zip
+          name: ${{ inputs.name }}-${{ inputs.platform }}.zip
           path: node_modules/pake-cli/output/*
-          retention-days: 3
+
+      - name: Push to Releases
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: node_modules/pake-cli/output/*
+          tag: ${{ inputs.name }}-v1.0.${{ github.run_number }}
+          token: ${{ github.TOKEN }}
 
       - name: Rust cache store
         uses: actions/cache/save@v3
